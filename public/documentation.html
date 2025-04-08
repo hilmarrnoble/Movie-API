@@ -9,5 +9,64 @@
   <h1>Welcome to the Noble Flix Movie Database</h1>
   <p>To get the top 10 movies, navigate to <strong>/movies</strong>.</p>
   <p>For the home page, navigate to <strong>/</strong>.</p>
+  
+  <h2>API Endpoints</h2>
+
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Request</th>
+        <th>URL</th>
+        <th>Response</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>GET</td>
+        <td>/movies</td>
+        <td>Returns a list of all movies in the database.</td>
+      </tr>
+      <tr>
+        <td>GET</td>
+        <td>/movies/:title</td>
+        <td>Returns movie details (description, genre, director, image URL) for the given title.</td>
+      </tr>
+      <tr>
+        <td>GET</td>
+        <td>/genres/:name</td>
+        <td>Returns genre details, including a brief description of the genre.</td>
+      </tr>
+      <tr>
+        <td>GET</td>
+        <td>/directors/:name</td>
+        <td>Returns director information, including bio and years of birth/death.</td>
+      </tr>
+      <tr>
+        <td>POST</td>
+        <td>/register</td>
+        <td>Registers a new user with the provided username, email, and password.</td>
+      </tr>
+      <tr>
+        <td>PUT</td>
+        <td>/users/:id</td>
+        <td>Updates a user's information (username).</td>
+      </tr>
+      <tr>
+        <td>POST</td>
+        <td>/users/:id/favorites</td>
+        <td>Adds a movie to a user's list of favorites.</td>
+      </tr>
+      <tr>
+        <td>DELETE</td>
+        <td>/users/:id/favorites</td>
+        <td>Removes a movie from a user's list of favorites.</td>
+      </tr>
+      <tr>
+        <td>DELETE</td>
+        <td>/users/:id</td>
+        <td>Deregisters a user and removes their account.</td>
+      </tr>
+    </tbody>
+  </table>
 </body>
 </html>
