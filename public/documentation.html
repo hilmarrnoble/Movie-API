@@ -1,72 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Movie API Documentation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 2rem;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+      color: #222;
+    }
+    h2 {
+      color: #444;
+      border-bottom: 1px solid #ccc;
+    }
+    code {
+      background: #eee;
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-family: monospace;
+    }
+    section {
+      margin-bottom: 2rem;
+    }
+    .method {
+      font-weight: bold;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-right: 6px;
+    }
+    .GET { background-color: #2d9cdb; }
+    .POST { background-color: #27ae60; }
+    .PUT { background-color: #f39c12; }
+    .DELETE { background-color: #c0392b; }
+  </style>
 </head>
 <body>
-  <h1>Welcome to the Noble Flix Movie Database</h1>
-  <p>To get the top 10 movies, navigate to <strong>/movies</strong>.</p>
-  <p>For the home page, navigate to <strong>/</strong>.</p>
-  
-  <h2>API Endpoints</h2>
+  <h1>🎬 Movie API Documentation</h1>
 
-  <table border="1">
-    <thead>
-      <tr>
-        <th>Request</th>
-        <th>URL</th>
-        <th>Response</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>GET</td>
-        <td>/movies</td>
-        <td>Returns a list of all movies in the database.</td>
-      </tr>
-      <tr>
-        <td>GET</td>
-        <td>/movies/:title</td>
-        <td>Returns movie details (description, genre, director, image URL) for the given title.</td>
-      </tr>
-      <tr>
-        <td>GET</td>
-        <td>/genres/:name</td>
-        <td>Returns genre details, including a brief description of the genre.</td>
-      </tr>
-      <tr>
-        <td>GET</td>
-        <td>/directors/:name</td>
-        <td>Returns director information, including bio and years of birth/death.</td>
-      </tr>
-      <tr>
-        <td>POST</td>
-        <td>/register</td>
-        <td>Registers a new user with the provided username, email, and password.</td>
-      </tr>
-      <tr>
-        <td>PUT</td>
-        <td>/users/:id</td>
-        <td>Updates a user's information (username).</td>
-      </tr>
-      <tr>
-        <td>POST</td>
-        <td>/users/:id/favorites</td>
-        <td>Adds a movie to a user's list of favorites.</td>
-      </tr>
-      <tr>
-        <td>DELETE</td>
-        <td>/users/:id/favorites</td>
-        <td>Removes a movie from a user's list of favorites.</td>
-      </tr>
-      <tr>
-        <td>DELETE</td>
-        <td>/users/:id</td>
-        <td>Deregisters a user and removes their account.</td>
-      </tr>
-    </tbody>
-  </table>
+  <section>
+    <h2>🔐 Authentication</h2>
+    <p><span class="method POST">POST</span> <code>/api/users/register</code> - Register a new user</p>
+    <p><span class="method POST">POST</span> <code>/api/users/login</code> - Log in with email & password, returns JWT</p>
+    <p><span class="method GET">GET</span> <code>/auth/google</code> - Initiate Google OAuth login</p>
+    <p><span class="method GET">GET</span> <code>/auth/google/callback</code> - Google OAuth callback (returns JWT)</p>
+  </section>
+
+  <section>
+    <h2>👤 Users</h2>
+    <p>All below routes require a valid JWT in the <code>Authorization</code> header as <code>Bearer &lt;token&gt;</code>.</p>
+    <p><span class="method GET">GET</span> <code>/api/users</code> - (OPTIONAL) Get all users</p>
+    <p><span class="method GET">GET</span> <code>/api/users/:id</code> - (OPTIONAL) Get user by ID</p>
+    <p><span class="method PUT">PUT</span> <code>/api/users/:id</code> - (OPTIONAL) Update user</p>
+    <p><span class="method DELETE">DELETE</span> <code>/api/users/:id</code> - (OPTIONAL) Delete user</p>
+  </section>
+
+  <section>
+    <h2>🎞️ Movies</h2>
+    <p><span class="method GET">GET</span> <code>/api/movies</code> - Get all movies</p>
+    <p><span class="method GET">GET</span> <code>/api/movies/:id</code> - Get movie by ID</p>
+    <p><span class="method POST">POST</span> <code>/api/movies</code> - Add a new movie (Requires JWT)</p>
+    <p><span class="method PUT">PUT</span> <code>/api/movies/:id</code> - Update a movie (Requires JWT)</p>
+    <p><span class="method DELETE">DELETE</span> <code>/api/movies/:id</code> - Delete a movie (Requires JWT)</p>
+  </section>
+
+  <section>
+    <h2>📄 API Docs (Swagger)</h2>
+    <p><span class="method GET">GET</span> <code>/docs</code> - Interactive API explorer via Swagger UI</p>
+  </section>
+
 </body>
 </html>
