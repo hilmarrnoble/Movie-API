@@ -48,32 +48,28 @@
     <h2>🔐 Authentication</h2>
     <p><span class="method POST">POST</span> <code>/api/users/register</code> - Register a new user</p>
     <p><span class="method POST">POST</span> <code>/api/users/login</code> - Log in with email & password, returns JWT</p>
-    <p><span class="method GET">GET</span> <code>/auth/google</code> - Initiate Google OAuth login</p>
-    <p><span class="method GET">GET</span> <code>/auth/google/callback</code> - Google OAuth callback (returns JWT)</p>
   </section>
 
   <section>
     <h2>👤 Users</h2>
-    <p>All below routes require a valid JWT in the <code>Authorization</code> header as <code>Bearer &lt;token&gt;</code>.</p>
-    <p><span class="method GET">GET</span> <code>/api/users</code> - (OPTIONAL) Get all users</p>
-    <p><span class="method GET">GET</span> <code>/api/users/:id</code> - (OPTIONAL) Get user by ID</p>
-    <p><span class="method PUT">PUT</span> <code>/api/users/:id</code> - (OPTIONAL) Update user</p>
-    <p><span class="method DELETE">DELETE</span> <code>/api/users/:id</code> - (OPTIONAL) Delete user</p>
+    <p><span class="method PUT">PUT</span> <code>/api/users/:id</code> - Update user</p>
+    <p><span class="method DELETE">DELETE</span> <code>/api/users/:id</code> - Deregister (delete user)</p>
+    <p><span class="method POST">POST</span> <code>/api/users/:id/favorites/:movieId</code> - Add movie to favorites</p>
+    <p><span class="method DELETE">DELETE</span> <code>/api/users/:id/favorites/:movieId</code> - Remove movie from favorites</p>
   </section>
 
   <section>
     <h2>🎞️ Movies</h2>
     <p><span class="method GET">GET</span> <code>/api/movies</code> - Get all movies</p>
-    <p><span class="method GET">GET</span> <code>/api/movies/:id</code> - Get movie by ID</p>
+    <p><span class="method GET">GET</span> <code>/api/movies/title/:title</code> - Get a movie by title</p>
+    <p><span class="method GET">GET</span> <code>/api/movies/genres/:name</code> - Get genre description by name</p>
+    <p><span class="method GET">GET</span> <code>/api/movies/directors/:name</code> - Get director info by name</p>
     <p><span class="method POST">POST</span> <code>/api/movies</code> - Add a new movie (Requires JWT)</p>
-    <p><span class="method PUT">PUT</span> <code>/api/movies/:id</code> - Update a movie (Requires JWT)</p>
-    <p><span class="method DELETE">DELETE</span> <code>/api/movies/:id</code> - Delete a movie (Requires JWT)</p>
   </section>
 
   <section>
     <h2>📄 API Docs (Swagger)</h2>
-    <p><span class="method GET">GET</span> <code>/docs</code> - Interactive API explorer via Swagger UI</p>
+    <p><span class="method GET">GET</span> <code>/docs</code> - Interactive Swagger API explorer</p>
   </section>
-
 </body>
 </html>

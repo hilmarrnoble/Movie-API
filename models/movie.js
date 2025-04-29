@@ -8,7 +8,12 @@ const movieSchema = new mongoose.Schema({
   },
   director: {
     name: String,
-    birthYear: Number
+    bio: String
+  },
+  Actors: {
+  name: String,
+  ImagePath: String,
+  Featured: Boolean
   },
   releaseYear: Number
 });
