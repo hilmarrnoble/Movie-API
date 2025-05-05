@@ -1,27 +1,24 @@
-require('dotenv').config();
+// server.js or app.js
 const express = require('express');
-const session = require('express-session');
-const connectDB = require('./config/db');
-const movieRoutes = require('./routes/movies');
-const userRoutes = require('./routes/users');
-const errorHandler = require('./middleware/errorHandler');
-const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('./utils/swagger');
+const mongoose = require('mongoose');
+const passport = require('passport');
+require('dotenv').config();
+
+const authRoutes = require('./routes/auth');
+const movieRoutes = require('./routes/movies'); // Example protected route
 
 const app = express();
-connectDB();
-
+require('./config/passport')(passport); // ⬅️ Initialize strategies
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(session({ secret: process.env.SESSION_SECRET || 'default', resave: false, saveUninitialized: true }));
+app.use(passport.initialize());
 
-
-app.use('/api/movies', movieRoutes);
-app.use('/api/users', userRoutes);
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-app.use(errorHandler);
+app.use('/api/auth', authRoutes);
+app.use('/api/movies', require('./middleware/auth'), movieRoutes); // Protect with JWT
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/movie-api')
+  .then(() => {
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  })
+  .catch((err) => console.error(err));

@@ -1,17 +1,19 @@
+// models/User.js
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  password: String,
-  email: String,
-  birthday: Date,
-  favoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie' }]
+  name: String,
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  googleId: String,
 });
 
-userSchema.statics.hashPassword = function(password) {
-  const bcrypt = require('bcryptjs');
-  const salt = bcrypt.genSaltSync(10);
-  return bcrypt.hashSync(password, salt);
-};
+// Hash password before saving
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
 
 module.exports = mongoose.model('User', userSchema);

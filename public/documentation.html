@@ -1,75 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Movie API Documentation</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
-      margin: 2rem;
-      background-color: #f9f9f9;
-    }
-    h1 {
-      text-align: center;
-      color: #222;
-    }
-    h2 {
-      color: #444;
-      border-bottom: 1px solid #ccc;
-    }
-    code {
-      background: #eee;
-      padding: 2px 4px;
-      border-radius: 3px;
-      font-family: monospace;
-    }
-    section {
-      margin-bottom: 2rem;
-    }
-    .method {
-      font-weight: bold;
-      color: white;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-right: 6px;
-    }
-    .GET { background-color: #2d9cdb; }
-    .POST { background-color: #27ae60; }
-    .PUT { background-color: #f39c12; }
-    .DELETE { background-color: #c0392b; }
-  </style>
-</head>
-<body>
-  <h1>🎬 Movie API Documentation</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Movie API Documentation</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://unpkg.com/swagger-ui-dist/swagger-ui.css"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="swagger-ui"></div>
+    <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js"></script>
+    <script>
+      const spec = {
+        openapi: "3.0.0",
+        info: {
+          title: "Movie API",
+          description: "A REST API for managing movies and user accounts.",
+          version: "1.0.0"
+        },
+        servers: [
+          {
+            url: "http://localhost:3000",
+            description: "Local development server"
+          }
+        ],
+        components: {
+          securitySchemes: {
+            bearerAuth: {
+              type: "http",
+              scheme: "bearer",
+              bearerFormat: "JWT"
+            }
+          },
+          schemas: {
+            User: {
+              type: "object",
+              properties: {
+                username: { type: "string" },
+                email: { type: "string" },
+                password: { type: "string" }
+              },
+              required: ["username", "email", "password"]
+            },
+            Login: {
+              type: "object",
+              properties: {
+                email: { type: "string" },
+                password: { type: "string" }
+              },
+              required: ["email", "password"]
+            },
+            Movie: {
+              type: "object",
+              properties: {
+                title: { type: "string" },
+                description: { type: "string" },
+                genre: { type: "string" },
+                director: { type: "string" },
+                releaseYear: { type: "integer" }
+              },
+              required: ["title", "description"]
+            }
+          }
+        },
+        paths: {
+          "/auth/register": {
+            post: {
+              summary: "Register a new user",
+              requestBody: {
+                required: true,
+                content: {
+                  "application/json": {
+                    schema: { $ref: "#/components/schemas/User" }
+                  }
+                }
+              },
+              responses: {
+                201: {
+                  description: "User registered successfully"
+                },
+                400: {
+                  description: "Validation or registration error"
+                }
+              }
+            }
+          },
+          "/auth/login": {
+            post: {
+              summary: "Login a user and receive a JWT token",
+              requestBody: {
+                required: true,
+                content: {
+                  "application/json": {
+                    schema: { $ref: "#/components/schemas/Login" }
+                  }
+                }
+              },
+              responses: {
+                200: {
+                  description: "Login successful, JWT returned"
+                },
+                401: {
+                  description: "Invalid credentials"
+                }
+              }
+            }
+          },
+          "/api/movies": {
+            get: {
+              summary: "Get all movies",
+              security: [{ bearerAuth: [] }],
+              responses: {
+                200: {
+                  description: "List of movies"
+                },
+                401: {
+                  description: "Unauthorized"
+                }
+              }
+            },
+            post: {
+              summary: "Create a new movie",
+              security: [{ bearerAuth: [] }],
+              requestBody: {
+                required: true,
+                content: {
+                  "application/json": {
+                    schema: { $ref: "#/components/schemas/Movie" }
+                  }
+                }
+              },
+              responses: {
+                201: {
+                  description: "Movie created"
+                },
+                401: {
+                  description: "Unauthorized"
+                }
+              }
+            }
+          },
+          "/api/movies/{id}": {
+            get: {
+              summary: "Get a movie by ID",
+              security: [{ bearerAuth: [] }],
+              parameters: [
+                {
+                  name: "id",
+                  in: "path",
+                  required: true,
+                  schema: { type: "string" }
+                }
+              ],
+              responses: {
+                200: { description: "Movie found" },
+                404: { description: "Movie not found" },
+                401: { description: "Unauthorized" }
+              }
+            },
+            put: {
+              summary: "Update a movie by ID",
+              security: [{ bearerAuth: [] }],
+              parameters: [
+                {
+                  name: "id",
+                  in: "path",
+                  required: true,
+                  schema: { type: "string" }
+                }
+              ],
+              requestBody: {
+                required: true,
+                content: {
+                  "application/json": {
+                    schema: { $ref: "#/components/schemas/Movie" }
+                  }
+                }
+              },
+              responses: {
+                200: { description: "Movie updated" },
+                404: { description: "Movie not found" },
+                401: { description: "Unauthorized" }
+              }
+            },
+            delete: {
+              summary: "Delete a movie by ID",
+              security: [{ bearerAuth: [] }],
+              parameters: [
+                {
+                  name: "id",
+                  in: "path",
+                  required: true,
+                  schema: { type: "string" }
+                }
+              ],
+              responses: {
+                204: { description: "Movie deleted" },
+                404: { description: "Movie not found" },
+                401: { description: "Unauthorized" }
+              }
+            }
+          }
+        }
+      };
 
-  <section>
-    <h2>🔐 Authentication</h2>
-    <p><span class="method POST">POST</span> <code>/api/users/register</code> - Register a new user</p>
-    <p><span class="method POST">POST</span> <code>/api/users/login</code> - Log in with email & password, returns JWT</p>
-  </section>
-
-  <section>
-    <h2>👤 Users</h2>
-    <p><span class="method PUT">PUT</span> <code>/api/users/:id</code> - Update user</p>
-    <p><span class="method DELETE">DELETE</span> <code>/api/users/:id</code> - Deregister (delete user)</p>
-    <p><span class="method POST">POST</span> <code>/api/users/:id/favorites/:movieId</code> - Add movie to favorites</p>
-    <p><span class="method DELETE">DELETE</span> <code>/api/users/:id/favorites/:movieId</code> - Remove movie from favorites</p>
-  </section>
-
-  <section>
-    <h2>🎞️ Movies</h2>
-    <p><span class="method GET">GET</span> <code>/api/movies</code> - Get all movies</p>
-    <p><span class="method GET">GET</span> <code>/api/movies/title/:title</code> - Get a movie by title</p>
-    <p><span class="method GET">GET</span> <code>/api/movies/genres/:name</code> - Get genre description by name</p>
-    <p><span class="method GET">GET</span> <code>/api/movies/directors/:name</code> - Get director info by name</p>
-    <p><span class="method POST">POST</span> <code>/api/movies</code> - Add a new movie (Requires JWT)</p>
-  </section>
-
-  <section>
-    <h2>📄 API Docs (Swagger)</h2>
-    <p><span class="method GET">GET</span> <code>/docs</code> - Interactive Swagger API explorer</p>
-  </section>
-</body>
+      const ui = SwaggerUIBundle({
+        spec,
+        dom_id: "#swagger-ui"
+      });
+    </script>
+  </body>
 </html>

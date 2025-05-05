@@ -1,14 +1,14 @@
-const jwt = require('jsonwebtoken');
+// middleware/auth.js
+const passport = require('passport');
 
-const authenticateToken = (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.sendStatus(401);
-  
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
+const jwtAuth = (req, res, next) => {
+  passport.authenticate('jwt', { session: false }, (err, user) => {
+    if (err || !user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
     req.user = user;
     next();
-  });
+  })(req, res, next);
 };
 
-module.exports = authenticateToken;
+module.exports = jwtAuth;
