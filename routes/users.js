@@ -1,61 +1,80 @@
+// routes/users.js
 const express = require('express');
-const router = express.Router();
-
-const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const authenticateToken = require('../middleware/auth'); 
+const User = require('../models/user'); // Import your User model
 
-// Update user info
-router.put('/:id', authenticateToken, async (req, res) => {
-  try {
-    const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
-      { $set: req.body },
-      { new: true }
-    ).select('-password');
-    res.json(updatedUser);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+const router = express.Router();
+
+// POST /api/users/register - Register a new user
+router.post('/register', async (req, res) => {
+    const { name, email, password, birthday } = req.body;
+
+    try {
+        // Check if user already exists
+        let user = await User.findOne({ email });
+        if (user) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+
+        // Create a new user
+        user = new User({
+            name,
+            email,
+            password,
+            birthday
+        });
+
+        // Hash the password before saving it
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+
+        // Save the user
+        await user.save();
+
+        res.status(201).json({
+            message: 'User registered successfully',
+            user: { name: user.name, email: user.email, birthday: user.birthday }
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
 });
 
-// Add to favorites
-router.post('/:id/favorites/:movieId', authenticateToken, async (req, res) => {
-  try {
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      { $addToSet: { favoriteMovies: req.params.movieId } },
-      { new: true }
-    ).populate('favoriteMovies');
-    res.json(user);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+// POST /api/users/login - Login user
+router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        // Check if user exists
+        let user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
+
+        // Check if password matches
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
+
+        // Create a JWT token
+        const payload = {
+            user: {
+                id: user.id
+            }
+        };
+        
+        // Sign the token
+        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
+            if (err) throw err;
+            res.json({ token });
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
 });
 
-// Remove from favorites
-router.delete('/:id/favorites/:movieId', authenticateToken, async (req, res) => {
-  try {
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      { $pull: { favoriteMovies: req.params.movieId } },
-      { new: true }
-    ).populate('favoriteMovies');
-    res.json(user);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// Delete user
-router.delete('/:id', authenticateToken, async (req, res) => {
-  try {
-    await User.findByIdAndDelete(req.params.id);
-    res.json({ message: 'User deregistered successfully' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-module.exports = router; 
+module.exports = router;

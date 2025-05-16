@@ -1,27 +1,24 @@
-// server.js or app.js
-const cors = require('cors');
+// index.js
 const express = require('express');
-const mongoose = require('mongoose');
-const passport = require('passport');
-const { check, validationResult } = require('express-validator');
-require('dotenv').config();
+const cors = require('cors');
+const dotenv = require('dotenv');
+const connectDB = require('./config/connect'); // Centralized DB connection
+const userRoutes = require('./routes/users'); // User routes
 
-const authRoutes = require('./routes/auth');
-const movieRoutes = require('./routes/movies'); // Example protected route
+dotenv.config(); // Load environment variables from .env
 
 const app = express();
-require('./config/passport')(passport); // ⬅️ Initialize strategies
 
-app.use(express.json());
-app.use(passport.initialize());
-app.use(cors());
+// Connect to MongoDB
+connectDB(); // Replaces manual mongoose.connect() call
 
-app.use('/api/auth', authRoutes);
-app.use('/api/movies', require('./middleware/auth'), movieRoutes); // Protect with JWT
+// Middleware
+app.use(express.json()); // For parsing application/json
+app.use(cors()); // To handle cross-origin requests
 
+// Routes
+app.use('/api/users', userRoutes); // Mount user-related routes
+
+// Start the server
 const PORT = process.env.PORT || 5000;
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/movie-api')
-  .then(() => {
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  })
-  .catch((err) => console.error(err));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

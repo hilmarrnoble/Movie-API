@@ -1,9 +1,11 @@
+// db/seed.js
 const mongoose = require('mongoose');
 const connectDB = require('../config/connect');
 const Movie = require('../models/movie');
 const User = require('../models/user');
-const hashed = User.hashPassword;
+const bcrypt = require('bcryptjs');
 
+const hashPassword = (password) => bcrypt.hashSync(password, 10);
 
 async function seed() {
   await connectDB();
@@ -82,48 +84,51 @@ async function seed() {
     }
   ]);
 
-  const hashed = User.hashPassword;
-
   const users = await User.insertMany([
     {
+      name: 'John Doe',
       username: 'jdoe',
-      password: hashed('password1'),
+      password: hashPassword('password1'),
       email: 'jdoe@example.com',
       birthday: new Date('1990-01-01'),
       favoriteMovies: [movies[0]._id, movies[1]._id]
     },
     {
+      name: 'Alice Smith',
       username: 'asmith',
-      password: hashed('password2'),
+      password: hashPassword('password2'),
       email: 'asmith@example.com',
       birthday: new Date('1985-05-15'),
       favoriteMovies: [movies[3]._id, movies[4]._id]
     },
     {
+      name: 'Bruce Wayne',
       username: 'bwayne',
-      password: hashed('password3'),
+      password: hashPassword('password3'),
       email: 'bwayne@example.com',
       birthday: new Date('1975-07-30'),
       favoriteMovies: [movies[2]._id]
     },
     {
+      name: 'Clark Kent',
       username: 'ckent',
-      password: hashed('password4'),
+      password: hashPassword('password4'),
       email: 'ckent@example.com',
       birthday: new Date('1980-12-25'),
       favoriteMovies: [movies[5]._id, movies[6]._id]
     },
     {
+      name: 'Diana Parker',
       username: 'dparker',
-      password: hashed('password5'),
+      password: hashPassword('password5'),
       email: 'dparker@example.com',
       birthday: new Date('1995-03-10'),
       favoriteMovies: [movies[7]._id, movies[8]._id, movies[9]._id]
     }
   ]);
 
-  console.log('Database seeded successfully!');
+  console.log('✅ Database seeded successfully!');
   mongoose.connection.close();
 }
 
-seed().catch(err => console.error(err));
+seed().catch(err => console.error('❌ Seeding error:', err));
