@@ -13,12 +13,16 @@ const movieSchema = new mongoose.Schema({
     bio: String,
     birthYear: Number
   },
-  Actors: {
-    name: String,
-    ImagePath: String,
-    Featured: Boolean
-  },
-  releaseYear: Number
-});
+  actors: [  // ✅ plural, array of actor objects for flexibility
+    {
+      name: String,
+      imagePath: String,
+      featured: Boolean
+    }
+  ],
+  releaseYear: Number,
+  imageURL: String, // ✅ optional image for poster art
+}, { timestamps: true });
 
-module.exports = mongoose.models.Movie || mongoose.model('Movie', movieSchema);
+module.exports = mongoose.model('Movie', movieSchema);
+
