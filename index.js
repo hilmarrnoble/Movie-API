@@ -1,25 +1,42 @@
+// index.js
 const express = require('express');
 const cors = require('cors');
+const morgan = require('morgan');
 const dotenv = require('dotenv');
-const connectDB = require('./config/connect'); // Centralized DB connection
-const movieRoutes = require('./routes/movies'); // Movie routes
-const userRoutes = require('./routes/users'); // User routes
+const passport = require('passport');
+const connectDB = require('./config/connect');
 
-dotenv.config(); // Load environment variables from .env
+dotenv.config();
 
 const app = express();
 
-// Connect to MongoDB
+// DB
 connectDB();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors()); // optionally: cors({ origin: process.env.CORS_ORIGIN?.split(',') || '*' })
+app.use(morgan('dev'));
+
+// Passport
+require('./config/passport')(passport);
+app.use(passport.initialize());
 
 // Routes
-app.use('/api/movies', movieRoutes);
-app.use('/api/users', userRoutes);
+app.use('/auth', require('./routes/auth'));
+app.use('/api/movies', require('./routes/movies'));
+app.use('/api/users', require('./routes/users'));
 
-// Start the server
+// Swagger docs
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./utils/swagger');
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Health
+app.get('/health', (_req, res) => res.json({ ok: true }));
+
+// Errors
+app.use(require('./middleware/errorHandler'));
+
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
