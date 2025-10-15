@@ -1,14 +1,15 @@
 // routes/movies.js
 const express = require('express');
-const movieController = require('../controllers/movieControllers'); // ✅ correct file
-const { authenticateToken } = require('../middleware/auth'); // ✅ correct export
+const movieController = require('../controllers/movieControllers');
+const { authenticateToken } = require('../middleware/auth');
 
 const router = express.Router();
 
-// GET public for client landing
-router.get('/', movieController.getAllMovies);
-
-// Example protected endpoints:
+/**
+ * All /api/movies endpoints are protected again (per Part 1).
+ * Clients must send: Authorization: Bearer <JWT>
+ */
+router.get('/', authenticateToken, movieController.getAllMovies);
 router.get('/:title', authenticateToken, movieController.getMovieByTitle);
 router.post('/', authenticateToken, movieController.createMovie);
 router.put('/:title', authenticateToken, movieController.updateMovie);
