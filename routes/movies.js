@@ -5,10 +5,7 @@ const { authenticateToken } = require('../middleware/auth');
 
 const router = express.Router();
 
-/**
- * All /api/movies endpoints are protected again (per Part 1).
- * Clients must send: Authorization: Bearer <JWT>
- */
+// All endpoints protected again
 router.get('/', authenticateToken, movieController.getAllMovies);
 router.get('/:title', authenticateToken, movieController.getMovieByTitle);
 router.post('/', authenticateToken, movieController.createMovie);
