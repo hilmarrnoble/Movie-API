@@ -1,112 +1,49 @@
 // db/seed.js
+// Load .env from the project root explicitly (works no matter where you run from)
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+
 const mongoose = require('mongoose');
 const connectDB = require('../config/connect');
 const Movie = require('../models/movie');
 const User = require('../models/user');
 
 async function seed() {
-  await connectDB();
+  try {
+    if (!process.env.MONGODB_URI && !process.env.MONGO_URI) {
+      throw new Error('.env not loaded or MONGODB_URI missing. Looked at: ' + path.resolve(__dirname, '../.env'));
+    }
 
-  // Safer than dropDatabase() on shared clusters
-  await Promise.all([Movie.deleteMany({}), User.deleteMany({})]);
+    await connectDB();
 
-  const movies = await Movie.insertMany([
-    {
-      title: 'Inception',
-      description: 'A mind-bending thriller about dream invasion.',
-      genre: { name: 'Sci-Fi', description: 'Science Fiction movies' },
-      director: { name: 'Christopher Nolan', birthYear: 1970 },
-      releaseYear: 2010,
-    },
-    {
-      title: 'Interstellar',
-      description: 'A space exploration movie through wormholes.',
-      genre: { name: 'Sci-Fi', description: 'Science Fiction movies' },
-      director: { name: 'Christopher Nolan', birthYear: 1970 },
-      releaseYear: 2014,
-    },
-    {
-      title: 'The Dark Knight',
-      description: 'Batman battles the Joker in Gotham.',
-      genre: { name: 'Action', description: 'Action-packed superhero films' },
-      director: { name: 'Christopher Nolan', birthYear: 1970 },
-      releaseYear: 2008,
-    },
-    {
-      title: 'The Godfather',
-      description: 'A mafia family saga.',
-      genre: { name: 'Crime', description: 'Crime and mob drama' },
-      director: { name: 'Francis Ford Coppola', birthYear: 1939 },
-      releaseYear: 1972,
-    },
-    {
-      title: 'Pulp Fiction',
-      description: 'Intersecting stories of crime in LA.',
-      genre: { name: 'Crime', description: 'Crime and drama' },
-      director: { name: 'Quentin Tarantino', birthYear: 1963 },
-      releaseYear: 1994,
-    },
-    {
-      title: 'Gladiator',
-      description: 'A Roman general seeks revenge.',
-      genre: { name: 'Historical', description: 'Historical epics' },
-      director: { name: 'Ridley Scott', birthYear: 1937 },
-      releaseYear: 2000,
-    },
-    {
-      title: 'Parasite',
-      description: 'A poor family infiltrates a rich household.',
-      genre: { name: 'Thriller', description: 'Thrillers with social commentary' },
-      director: { name: 'Bong Joon-ho', birthYear: 1969 },
-      releaseYear: 2019,
-    },
-    {
-      title: 'Spirited Away',
-      description: 'A girl enters a magical spirit world.',
-      genre: { name: 'Fantasy', description: 'Animated fantasy' },
-      director: { name: 'Hayao Miyazaki', birthYear: 1941 },
-      releaseYear: 2001,
-    },
-    {
-      title: 'The Matrix',
-      description: 'A hacker discovers reality is a simulation.',
-      genre: { name: 'Sci-Fi', description: 'Cyberpunk and philosophical sci-fi' },
-      director: { name: 'Lana Wachowski', birthYear: 1965 },
-      releaseYear: 1999,
-    },
-    {
-      title: 'Whiplash',
-      description: 'A jazz drummer pushed to the limit.',
-      genre: { name: 'Drama', description: 'Intense character-driven drama' },
-      director: { name: 'Damien Chazelle', birthYear: 1985 },
-      releaseYear: 2014,
-    },
-  ]);
+    // Safer than dropDatabase() on shared clusters
+    await Promise.all([Movie.deleteMany({}), User.deleteMany({})]);
 
-  const users = await User.insertMany([
-    {
-      name: 'John Doe',
-      username: 'jdoe',
-      password: 'password1',
-      email: 'jdoe@example.com',
-      birthday: new Date('1990-01-01'),
-      favoriteMovies: [movies[0]._id, movies[1]._id],
-    },
-    {
-      name: 'Alice Smith',
-      username: 'asmith',
-      password: 'password2',
-      email: 'asmith@example.com',
-      birthday: new Date('1985-05-15'),
-      favoriteMovies: [movies[3]._id, movies[4]._id],
-    },
-  ]);
+    const movies = await Movie.insertMany([
+      { title: 'Inception', description: 'A mind-bending thriller about dream invasion.', genre: { name: 'Sci-Fi', description: 'Science Fiction movies' }, director: { name: 'Christopher Nolan', birthYear: 1970 }, releaseYear: 2010 },
+      { title: 'Interstellar', description: 'A space exploration movie through wormholes.', genre: { name: 'Sci-Fi', description: 'Science Fiction movies' }, director: { name: 'Christopher Nolan', birthYear: 1970 }, releaseYear: 2014 },
+      { title: 'The Dark Knight', description: 'Batman battles the Joker in Gotham.', genre: { name: 'Action', description: 'Action-packed superhero films' }, director: { name: 'Christopher Nolan', birthYear: 1970 }, releaseYear: 2008 },
+      { title: 'The Godfather', description: 'A mafia family saga.', genre: { name: 'Crime', description: 'Crime and mob drama' }, director: { name: 'Francis Ford Coppola', birthYear: 1939 }, releaseYear: 1972 },
+      { title: 'Pulp Fiction', description: 'Intersecting stories of crime in LA.', genre: { name: 'Crime', description: 'Crime and drama' }, director: { name: 'Quentin Tarantino', birthYear: 1963 }, releaseYear: 1994 },
+      { title: 'Gladiator', description: 'A Roman general seeks revenge.', genre: { name: 'Historical', description: 'Historical epics' }, director: { name: 'Ridley Scott', birthYear: 1937 }, releaseYear: 2000 },
+      { title: 'Parasite', description: 'A poor family infiltrates a rich household.', genre: { name: 'Thriller', description: 'Thrillers with social commentary' }, director: { name: 'Bong Joon-ho', birthYear: 1969 }, releaseYear: 2019 },
+      { title: 'Spirited Away', description: 'A girl enters a magical spirit world.', genre: { name: 'Fantasy', description: 'Animated fantasy' }, director: { name: 'Hayao Miyazaki', birthYear: 1941 }, releaseYear: 2001 },
+      { title: 'The Matrix', description: 'A hacker discovers reality is a simulation.', genre: { name: 'Sci-Fi', description: 'Cyberpunk and philosophical sci-fi' }, director: { name: 'Lana Wachowski', birthYear: 1965 }, releaseYear: 1999 },
+      { title: 'Whiplash', description: 'A jazz drummer pushed to the limit.', genre: { name: 'Drama', description: 'Intense character-driven drama' }, director: { name: 'Damien Chazelle', birthYear: 1985 }, releaseYear: 2014 },
+    ]);
 
-  console.log('✅ Database seeded successfully!');
-  await mongoose.connection.close();
+    await User.insertMany([
+      { name: 'John Doe', username: 'jdoe', password: 'password1', email: 'jdoe@example.com', birthday: new Date('1990-01-01'), favoriteMovies: [movies[0]._id, movies[1]._id] },
+      { name: 'Alice Smith', username: 'asmith', password: 'password2', email: 'asmith@example.com', birthday: new Date('1985-05-15'), favoriteMovies: [movies[3]._id, movies[4]._id] },
+    ]);
+
+    console.log('✅ Database seeded successfully!');
+  } catch (err) {
+    console.error('❌ Seeding error:', err.message || err);
+    process.exit(1);
+  } finally {
+    await mongoose.connection.close();
+  }
 }
 
-seed().catch((err) => {
-  console.error('❌ Seeding error:', err);
-  process.exit(1);
-});
+seed();
